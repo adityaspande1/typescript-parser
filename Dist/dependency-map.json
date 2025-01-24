@@ -1,0 +1,108 @@
+{
+  "ProductController.ts": {
+    "fileName": "ProductController.ts",
+    "importedFrom": [
+      "ProductServices.ts",
+      "Product.ts"
+    ],
+    "exportedTo": [],
+    "importedFunctions": [
+      "ProductService",
+      "Product"
+    ]
+  },
+  "UserController.ts": {
+    "fileName": "UserController.ts",
+    "importedFrom": [
+      "UserServices.ts",
+      "user.ts"
+    ],
+    "exportedTo": [],
+    "importedFunctions": [
+      "UserService",
+      "User"
+    ]
+  },
+  "index.ts": {
+    "fileName": "index.ts",
+    "importedFrom": [
+      "DatabaseConnection.ts",
+      "UserServices.ts",
+      "ProductServices.ts",
+      "AuthServices.ts",
+      "UserController.ts",
+      "ProductController.ts"
+    ],
+    "exportedTo": [],
+    "importedFunctions": [
+      "DatabaseConnection",
+      "UserService",
+      "ProductService",
+      "AuthService",
+      "UserController",
+      "ProductController"
+    ]
+  },
+  "Product.ts": {
+    "fileName": "Product.ts",
+    "importedFrom": [],
+    "exportedTo": [],
+    "importedFunctions": []
+  },
+  "user.ts": {
+    "fileName": "user.ts",
+    "importedFrom": [],
+    "exportedTo": [],
+    "importedFunctions": []
+  },
+  "AuthServices.ts": {
+    "fileName": "AuthServices.ts",
+    "importedFrom": [
+      "user.ts",
+      "DatabaseConnection.ts"
+    ],
+    "exportedTo": [],
+    "importedFunctions": [
+      "User",
+      "DatabaseConnection"
+    ]
+  },
+  "ProductServices.ts": {
+    "fileName": "ProductServices.ts",
+    "importedFrom": [
+      "Product.ts",
+      "DatabaseConnection.ts"
+    ],
+    "exportedTo": [],
+    "importedFunctions": [
+      "Product",
+      "DatabaseConnection"
+    ]
+  },
+  "UserServices.ts": {
+    "fileName": "UserServices.ts",
+    "importedFrom": [
+      "user.ts",
+      "ValidationUtils.ts",
+      "DatabaseConnection.ts"
+    ],
+    "exportedTo": [],
+    "importedFunctions": [
+      "User",
+      "validateEmail",
+      "DatabaseConnection"
+    ]
+  },
+  "DatabaseConnection.ts": {
+    "fileName": "DatabaseConnection.ts",
+    "importedFrom": [],
+    "exportedTo": [],
+    "importedFunctions": []
+  },
+  "ValidationUtils.ts": {
+    "fileName": "ValidationUtils.ts",
+    "importedFrom": [],
+    "exportedTo": [],
+    "importedFunctions": []
+  }
+}
