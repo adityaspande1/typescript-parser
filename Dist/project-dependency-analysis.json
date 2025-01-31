@@ -1,0 +1,250 @@
+{
+  "components": [
+    {
+      "fileName": "app.ts",
+      "exportedComponents": [],
+      "hooks": [],
+      "states": [],
+      "renderEnvironment": "client",
+      "exportLocation": "named",
+      "importedDependencies": [
+        "project-input.js",
+        "project-list.js"
+      ],
+      "exportedTo": []
+    },
+    {
+      "fileName": "base-component.ts",
+      "exportedComponents": [],
+      "hooks": [],
+      "states": [],
+      "renderEnvironment": "client",
+      "exportLocation": "named",
+      "importedDependencies": [],
+      "exportedTo": []
+    },
+    {
+      "fileName": "project-input.ts",
+      "exportedComponents": [],
+      "hooks": [],
+      "states": [],
+      "renderEnvironment": "client",
+      "exportLocation": "named",
+      "importedDependencies": [
+        "base-component.js",
+        "validation.js",
+        "autobind.js",
+        "project-state.js"
+      ],
+      "exportedTo": []
+    },
+    {
+      "fileName": "project-item.ts",
+      "exportedComponents": [],
+      "hooks": [],
+      "states": [],
+      "renderEnvironment": "client",
+      "exportLocation": "named",
+      "importedDependencies": [
+        "drag-drop.js",
+        "project.js",
+        "base-component.js",
+        "autobind.js"
+      ],
+      "exportedTo": []
+    },
+    {
+      "fileName": "project-list.ts",
+      "exportedComponents": [],
+      "hooks": [],
+      "states": [],
+      "renderEnvironment": "client",
+      "exportLocation": "named",
+      "importedDependencies": [
+        "drag-drop.js",
+        "project.js",
+        "base-component.js",
+        "autobind.js",
+        "project-state.js",
+        "project-item.js"
+      ],
+      "exportedTo": []
+    },
+    {
+      "fileName": "autobind.ts",
+      "exportedComponents": [],
+      "hooks": [],
+      "states": [],
+      "renderEnvironment": "client",
+      "exportLocation": "named",
+      "importedDependencies": [],
+      "exportedTo": []
+    },
+    {
+      "fileName": "drag-drop.ts",
+      "exportedComponents": [],
+      "hooks": [],
+      "states": [],
+      "renderEnvironment": "client",
+      "exportLocation": "named",
+      "importedDependencies": [],
+      "exportedTo": []
+    },
+    {
+      "fileName": "project.ts",
+      "exportedComponents": [],
+      "hooks": [],
+      "states": [],
+      "renderEnvironment": "client",
+      "exportLocation": "named",
+      "importedDependencies": [],
+      "exportedTo": []
+    },
+    {
+      "fileName": "project-state.ts",
+      "exportedComponents": [],
+      "hooks": [],
+      "states": [],
+      "renderEnvironment": "client",
+      "exportLocation": "named",
+      "importedDependencies": [
+        "project.js"
+      ],
+      "exportedTo": []
+    },
+    {
+      "fileName": "validation.ts",
+      "exportedComponents": [],
+      "hooks": [],
+      "states": [],
+      "renderEnvironment": "client",
+      "exportLocation": "named",
+      "importedDependencies": [],
+      "exportedTo": []
+    }
+  ],
+  "dependencyMap": {
+    "app.ts": {
+      "fileName": "app.ts",
+      "exportedComponents": [],
+      "hooks": [],
+      "states": [],
+      "renderEnvironment": "client",
+      "exportLocation": "named",
+      "importedDependencies": [
+        "project-input.js",
+        "project-list.js"
+      ],
+      "exportedTo": []
+    },
+    "base-component.ts": {
+      "fileName": "base-component.ts",
+      "exportedComponents": [],
+      "hooks": [],
+      "states": [],
+      "renderEnvironment": "client",
+      "exportLocation": "named",
+      "importedDependencies": [],
+      "exportedTo": []
+    },
+    "project-input.ts": {
+      "fileName": "project-input.ts",
+      "exportedComponents": [],
+      "hooks": [],
+      "states": [],
+      "renderEnvironment": "client",
+      "exportLocation": "named",
+      "importedDependencies": [
+        "base-component.js",
+        "validation.js",
+        "autobind.js",
+        "project-state.js"
+      ],
+      "exportedTo": []
+    },
+    "project-item.ts": {
+      "fileName": "project-item.ts",
+      "exportedComponents": [],
+      "hooks": [],
+      "states": [],
+      "renderEnvironment": "client",
+      "exportLocation": "named",
+      "importedDependencies": [
+        "drag-drop.js",
+        "project.js",
+        "base-component.js",
+        "autobind.js"
+      ],
+      "exportedTo": []
+    },
+    "project-list.ts": {
+      "fileName": "project-list.ts",
+      "exportedComponents": [],
+      "hooks": [],
+      "states": [],
+      "renderEnvironment": "client",
+      "exportLocation": "named",
+      "importedDependencies": [
+        "drag-drop.js",
+        "project.js",
+        "base-component.js",
+        "autobind.js",
+        "project-state.js",
+        "project-item.js"
+      ],
+      "exportedTo": []
+    },
+    "autobind.ts": {
+      "fileName": "autobind.ts",
+      "exportedComponents": [],
+      "hooks": [],
+      "states": [],
+      "renderEnvironment": "client",
+      "exportLocation": "named",
+      "importedDependencies": [],
+      "exportedTo": []
+    },
+    "drag-drop.ts": {
+      "fileName": "drag-drop.ts",
+      "exportedComponents": [],
+      "hooks": [],
+      "states": [],
+      "renderEnvironment": "client",
+      "exportLocation": "named",
+      "importedDependencies": [],
+      "exportedTo": []
+    },
+    "project.ts": {
+      "fileName": "project.ts",
+      "exportedComponents": [],
+      "hooks": [],
+      "states": [],
+      "renderEnvironment": "client",
+      "exportLocation": "named",
+      "importedDependencies": [],
+      "exportedTo": []
+    },
+    "project-state.ts": {
+      "fileName": "project-state.ts",
+      "exportedComponents": [],
+      "hooks": [],
+      "states": [],
+      "renderEnvironment": "client",
+      "exportLocation": "named",
+      "importedDependencies": [
+        "project.js"
+      ],
+      "exportedTo": []
+    },
+    "validation.ts": {
+      "fileName": "validation.ts",
+      "exportedComponents": [],
+      "hooks": [],
+      "states": [],
+      "renderEnvironment": "client",
+      "exportLocation": "named",
+      "importedDependencies": [],
+      "exportedTo": []
+    }
+  }
+}

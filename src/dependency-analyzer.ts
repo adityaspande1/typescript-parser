@@ -2,126 +2,243 @@ import * as ts from 'typescript';
 import * as fs from 'fs';
 import * as path from 'path';
 
-interface FileDependency {
+interface ComponentAnalysis {
   fileName: string;
-  importedFrom: string[];
-  exportedTo: string[];
-  importedFunctions: string[];
+  componentName: string;
+  isClientComponent: boolean;
+  isServerComponent: boolean;
+  isExported: boolean;
+  props: PropInterface[];
+  hooks: {
+    useState: string[];
+    useEffect: boolean;
+    useCallback: boolean;
+    useMemo: boolean;
+    useRef: boolean;
+    customHooks: string[];
+  };
+  states: StateInterface[];
+  usedInComponents: string[];
 }
 
-function extractDependencies(projectPath: string): Record<string, FileDependency> {
-  // Get all TypeScript files in the project
-  const tsFiles = getAllTypeScriptFiles(projectPath);
+interface PropInterface {
+  name: string;
+  type: string;
+  isRequired: boolean;
+}
 
-  const dependencies: Record<string, FileDependency> = {};
+interface StateInterface {
+  name: string;
+  type: string;
+  initialValue: string;
+}
 
-  // Create program with all TypeScript files
-  const program = ts.createProgram(tsFiles, { 
-    target: ts.ScriptTarget.ES2020, 
-    module: ts.ModuleKind.CommonJS 
-  });
-  
-  const typeChecker = program.getTypeChecker();
+function analyzeReactComponent(sourceFile: ts.SourceFile, typeChecker: ts.TypeChecker): ComponentAnalysis | null {
+  let componentInfo: ComponentAnalysis = {
+    fileName: path.basename(sourceFile.fileName),
+    componentName: '',
+    isClientComponent: false,
+    isServerComponent: false,
+    isExported: false,
+    props: [],
+    hooks: {
+      useState: [],
+      useEffect: false,
+      useCallback: false,
+      useMemo: false,
+      useRef: false,
+      customHooks: [],
+    },
+    states: [],
+    usedInComponents: [],
+  };
 
-  tsFiles.forEach(filePath => {
-    const sourceFile = program.getSourceFile(filePath);
-    if (sourceFile && !sourceFile.isDeclarationFile) {
-      const fileName = path.basename(filePath);
-      
-      dependencies[fileName] = {
-        fileName: fileName,
-        importedFrom: [],
-        exportedTo: [],
-        importedFunctions: []
-      };
+  function checkUseClientDirective(node: ts.SourceFile): void {
+    const firstStatement = node.statements[0];
+    if (
+      firstStatement &&
+      ts.isExpressionStatement(firstStatement) &&
+      ts.isStringLiteral(firstStatement.expression) &&
+      firstStatement.expression.text === 'use client'
+    ) {
+      componentInfo.isClientComponent = true;
+    }
+  }
 
-      // Analyze imports
-      sourceFile.forEachChild(node => {
-        if (ts.isImportDeclaration(node)) {
-          // Extract import path
-          const importPath = node.moduleSpecifier.getText().replace(/['"]/g, '');
-          const resolvedImportPath = resolveImportPath(projectPath, filePath, importPath);
-          const importedFileName = path.basename(resolvedImportPath);
-          
-          if (importedFileName !== fileName) {
-            dependencies[fileName].importedFrom.push(importedFileName);
-          }
-
-          // Extract imported functions/types
-          if (node.importClause) {
-            if (node.importClause.namedBindings && ts.isNamedImports(node.importClause.namedBindings)) {
-              node.importClause.namedBindings.elements.forEach(importSpecifier => {
-                dependencies[fileName].importedFunctions.push(
-                  importSpecifier.propertyName?.getText() || importSpecifier.name.getText()
-                );
-              });
-            }
-          }
+  function analyzeHooks(node: ts.Node): void {
+    if (ts.isCallExpression(node)) {
+      const expression = node.expression;
+      if (ts.isIdentifier(expression)) {
+        const hookName = expression.text;
+        if (hookName === 'useState') {
+          analyzeUseState(node);
+        } else if (hookName === 'useEffect') {
+          componentInfo.hooks.useEffect = true;
+        } else if (hookName === 'useCallback') {
+          componentInfo.hooks.useCallback = true;
+        } else if (hookName === 'useMemo') {
+          componentInfo.hooks.useMemo = true;
+        } else if (hookName === 'useRef') {
+          componentInfo.hooks.useRef = true;
+        } else if (hookName.startsWith('use')) {
+          componentInfo.hooks.customHooks.push(hookName);
         }
-      });
+      }
+    }
+    ts.forEachChild(node, analyzeHooks);
+  }
+
+  function analyzeUseState(node: ts.CallExpression): void {
+    if (node.parent && ts.isVariableDeclaration(node.parent)) {
+      const declaration = node.parent;
+      if (ts.isArrayBindingPattern(declaration.name)) {
+        const stateName = declaration.name.elements[0].getText();
+        const typeNode = typeChecker.getTypeAtLocation(node);
+        const stateType = typeChecker.typeToString(typeNode) || 'unknown';
+
+        let initialValue = 'undefined';
+        if (node.arguments.length > 0) {
+          initialValue = node.arguments[0].getText();
+        }
+
+        componentInfo.states.push({
+          name: stateName,
+          type: stateType,
+          initialValue: initialValue,
+        });
+
+        componentInfo.hooks.useState.push(stateName);
+      }
+    }
+  }
+
+  function analyzePropsInterface(node: ts.InterfaceDeclaration | ts.TypeAliasDeclaration): void {
+    if (node.name.getText().includes('Props')) {
+      let members: ts.NodeArray<ts.TypeElement> | undefined;
+  
+      // Handle interface declaration
+      if (ts.isInterfaceDeclaration(node)) {
+        members = node.members;
+      }
+      // Handle type alias declaration (must be a TypeLiteral)
+      else if (ts.isTypeAliasDeclaration(node) && ts.isTypeLiteralNode(node.type)) {
+        members = node.type.members;
+      }
+  
+      if (members) {
+        members.forEach(member => {
+          if (ts.isPropertySignature(member) && ts.isIdentifier(member.name)) {
+            const propName = member.name.getText();
+            const propType = member.type ? member.type.getText() : 'any';
+            const isRequired = !member.questionToken;
+  
+            componentInfo.props.push({
+              name: propName,
+              type: propType,
+              isRequired: isRequired
+            });
+          }
+        });
+      }
+    }
+  }
+  
+
+  function analyzeNode(node: ts.Node): void {
+    if (ts.isFunctionDeclaration(node) || ts.isVariableStatement(node)) {
+      let componentName = '';
+      if (ts.isFunctionDeclaration(node) && node.name) {
+        componentName = node.name.text;
+      } else if (
+        ts.isVariableStatement(node) &&
+        node.declarationList.declarations.length > 0
+      ) {
+        const declaration = node.declarationList.declarations[0];
+        if (ts.isIdentifier(declaration.name)) {
+          componentName = declaration.name.text;
+        }
+      }
+
+      if (componentName && /^[A-Z]/.test(componentName)) {
+        componentInfo.componentName = componentName;
+        componentInfo.isExported = hasExportKeyword(node);
+      }
+    }
+
+    if (ts.isInterfaceDeclaration(node) || ts.isTypeAliasDeclaration(node)) {
+      analyzePropsInterface(node);
+    }
+
+    analyzeHooks(node);
+    ts.forEachChild(node, analyzeNode);
+  }
+
+  function hasExportKeyword(node: ts.Node): boolean {
+    return !!(ts.getCombinedModifierFlags(node as ts.Declaration) & ts.ModifierFlags.Export);
+  }
+
+  checkUseClientDirective(sourceFile);
+  analyzeNode(sourceFile);
+
+  return componentInfo.componentName ? componentInfo : null;
+}
+
+function findComponentUsage(sourceFiles: readonly ts.SourceFile[], componentName: string): string[] {
+  const usedIn: string[] = [];
+
+  sourceFiles.forEach((sourceFile) => {
+    let isUsed = false;
+    ts.forEachChild(sourceFile, (node) => {
+      if (ts.isJsxElement(node) || ts.isJsxSelfClosingElement(node)) {
+        const tagName = ts.isJsxElement(node)
+          ? node.openingElement.tagName.getText()
+          : node.tagName.getText();
+
+        if (tagName === componentName) {
+          isUsed = true;
+        }
+      }
+    });
+
+    if (isUsed) {
+      usedIn.push(path.basename(sourceFile.fileName));
     }
   });
 
+  return usedIn;
+}
 
-  tsFiles.forEach(filePath => {
-    const fileName = path.basename(filePath);
-    
-    tsFiles.forEach(checkFilePath => {
-      const checkFileName = path.basename(checkFilePath);
-      if (fileName !== checkFileName) {
-        const content = fs.readFileSync(checkFilePath, 'utf-8');
-        if (content.includes(`from './${fileName}'`) || 
-            content.includes(`from "${fileName}"`) ||
-            content.includes(`from './${path.basename(fileName, '.ts')}'`) ||
-            content.includes(`from "${path.basename(fileName, '.ts')}"`)
-        ) {
-          dependencies[fileName].exportedTo.push(checkFileName);
-        }
-      }
-    });
+function analyzeProject(projectPath: string): void {
+  const filePaths = fs
+    .readdirSync(projectPath)
+    .filter((file) => file.endsWith('.tsx') || file.endsWith('.ts'))
+    .map((file) => path.join(projectPath, file));
+
+  const program = ts.createProgram(filePaths, {
+    target: ts.ScriptTarget.ESNext,
+    module: ts.ModuleKind.ESNext,
+    jsx: ts.JsxEmit.React,
   });
 
-  return dependencies;
-}
+  const typeChecker = program.getTypeChecker();
+  const sourceFiles = program.getSourceFiles();
+  const components: ComponentAnalysis[] = [];
 
-function getAllTypeScriptFiles(dirPath: string): string[] {
-  const tsFiles: string[] = [];
-
-  function traverseDirectory(currentPath: string) {
-    const files = fs.readdirSync(currentPath);
-
-    files.forEach(file => {
-      const fullPath = path.join(currentPath, file);
-      const stat = fs.statSync(fullPath);
-
-      if (stat.isDirectory()) {
-        traverseDirectory(fullPath);
-      } else if (file.endsWith('.ts') && !file.endsWith('.d.ts')) {
-        tsFiles.push(fullPath);
+  sourceFiles.forEach((sourceFile) => {
+    if (!sourceFile.isDeclarationFile && sourceFile.fileName.includes(projectPath)) {
+      const componentAnalysis = analyzeReactComponent(sourceFile, typeChecker);
+      if (componentAnalysis) {
+        componentAnalysis.usedInComponents = findComponentUsage(
+          sourceFiles,
+          componentAnalysis.componentName
+        );
+        components.push(componentAnalysis);
       }
-    });
-  }
+    }
+  });
 
-  traverseDirectory(dirPath);
-  return tsFiles;
+  fs.writeFileSync('component-analysis.json', JSON.stringify(components, null, 2));
 }
 
-function resolveImportPath(projectPath: string, currentFile: string, importPath: string): string {
-  // Handle relative imports
-  if (importPath.startsWith('./') || importPath.startsWith('../')) {
-    return path.resolve(path.dirname(currentFile), importPath + (importPath.endsWith('.ts') ? '' : '.ts'));
-  }
-  
-  // Handle absolute imports within project
-  return path.join(projectPath, importPath + '.ts');
-}
-
-function saveToJsonFile(data: Record<string, FileDependency>, outputPath: string) {
-  fs.writeFileSync(outputPath, JSON.stringify(data, null, 2));
-  console.log(`Dependency analysis saved to ${outputPath}`);
-}
-
-// Usage
-const projectPath = '/Users/adityapande/Desktop/trial-project/src';
-const dependencyMap = extractDependencies(projectPath);
-saveToJsonFile(dependencyMap, 'dependency-map.json');
+const projectPath = '/Users/adityapande/Desktop/trial-project/src'; // Update this with the correct project path
+analyzeProject(projectPath);
