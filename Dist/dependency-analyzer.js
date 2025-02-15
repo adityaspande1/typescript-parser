@@ -95,6 +95,7 @@ function analyzeReactComponent(sourceFile, typeChecker) {
     }
     function analyzeUseState(node) {
         if (node.parent && ts.isVariableDeclaration(node.parent)) {
+            // console.log("Node name",node.parent.name);
             const declaration = node.parent;
             if (ts.isArrayBindingPattern(declaration.name)) {
                 const stateName = declaration.name.elements[0].getText();
@@ -206,7 +207,7 @@ function getAllFiles(dir) {
             const fullPath = path.join(dir, item);
             const stat = fs.statSync(fullPath);
             if (stat.isDirectory()) {
-                // Skip node_modules and hidden directories
+                // Skiping  node_modules and hidden directories
                 if (item !== 'node_modules' && !item.startsWith('.')) {
                     files = files.concat(getAllFiles(fullPath));
                 }
@@ -249,7 +250,6 @@ function analyzeProject(projectPath) {
         allowJs: true,
         skipLibCheck: true,
     };
-    // Create program with error handling
     let program;
     try {
         program = ts.createProgram(filePaths, compilerOptions);
@@ -277,7 +277,7 @@ function analyzeProject(projectPath) {
     });
     console.log(`\nAnalysis complete. Found ${components.length} files analyzed.`);
     try {
-        const outputPath = path.join(process.cwd(), 'component-analysis.json');
+        const outputPath = path.join(process.cwd(), 'component-analysis1.json');
         fs.writeFileSync(outputPath, JSON.stringify(components, null, 2));
         console.log(`Results written to: ${outputPath}`);
     }
@@ -288,7 +288,8 @@ function analyzeProject(projectPath) {
 // Main execution with command line argument support and error handling
 try {
     // Use command line argument if provided, otherwise use default path
-    const projectPath = '/Users/adityapande/Desktop/Personal/AdityaPande/src';
+    const projectPath1 = '/Users/adityapande/Desktop/trial-project/src';
+    const projectPath = '/Users/adityapande/Desktop/Personal/AdityaPande';
     // '/Users/adityapande/Desktop/Extension/Dependency-Analysis-Extension/src';
     analyzeProject(projectPath);
 }
