@@ -1,0 +1,953 @@
+[
+  {
+    "fileName": "githubAuth.ts",
+    "filePath": "/Users/adityapande/Desktop/Project/CodeTracker/src/services/githubAuth.ts",
+    "exports": {
+      "components": [],
+      "functions": [
+        {
+          "name": "githubAuthenticate",
+          "isExported": true,
+          "params": [],
+          "returnType": "Promise<AuthenticationSession | { accessToken: string } | undefined>",
+          "usedInFiles": [
+            "/Users/adityapande/Desktop/Project/CodeTracker/src/commands/githubAuthCommand.ts",
+            "/Users/adityapande/Desktop/Project/CodeTracker/src/views/sideBar.ts",
+            "/Users/adityapande/Desktop/Project/CodeTracker/src/extension.ts"
+          ]
+        }
+      ],
+      "interfaces": [],
+      "types": [],
+      "classes": [],
+      "variables": [
+        {
+          "name": "session",
+          "isExported": false,
+          "type": "AuthenticationSession",
+          "usedInFiles": []
+        }
+      ]
+    },
+    "imports": [
+      {
+        "name": "vscode",
+        "path": "vscode",
+        "namedImports": [
+          "AuthenticationSession",
+          "authentication",
+          "window"
+        ],
+        "defaultImport": "",
+        "isTypeOnly": false
+      }
+    ],
+    "incomingDependencies": [
+      "/Users/adityapande/Desktop/Project/CodeTracker/src/commands/githubAuthCommand.ts",
+      "/Users/adityapande/Desktop/Project/CodeTracker/src/views/sideBar.ts",
+      "/Users/adityapande/Desktop/Project/CodeTracker/src/extension.ts"
+    ],
+    "outgoingDependencies": [],
+    "usedByComponents": []
+  },
+  {
+    "fileName": "workSpaceTracker.ts",
+    "filePath": "/Users/adityapande/Desktop/Project/CodeTracker/src/services/workSpaceTracker.ts",
+    "exports": {
+      "components": [],
+      "functions": [],
+      "interfaces": [
+        {
+          "name": "FileChange",
+          "isExported": true,
+          "properties": [
+            {
+              "name": "uri",
+              "type": "vscode.Uri",
+              "isRequired": true
+            },
+            {
+              "name": "type",
+              "type": "'created' | 'deleted' | 'modified'",
+              "isRequired": true
+            },
+            {
+              "name": "time",
+              "type": "Date",
+              "isRequired": true
+            }
+          ],
+          "usedInFiles": []
+        }
+      ],
+      "types": [],
+      "classes": [
+        {
+          "name": "WorkSpaceTracker",
+          "isExported": true,
+          "methods": [
+            {
+              "name": "getInstance",
+              "params": [
+                {
+                  "name": "logChannel",
+                  "type": "vscode.OutputChannel",
+                  "isRequired": true
+                }
+              ],
+              "returnType": "WorkSpaceTracker"
+            },
+            {
+              "name": "setupWatcher",
+              "params": [],
+              "returnType": "void"
+            },
+            {
+              "name": "trackChange",
+              "params": [
+                {
+                  "name": "uri",
+                  "type": "vscode.Uri",
+                  "isRequired": true
+                },
+                {
+                  "name": "type",
+                  "type": "'created' | 'modified' | 'deleted'",
+                  "isRequired": true
+                }
+              ],
+              "returnType": "void"
+            },
+            {
+              "name": "getTrackedChanges",
+              "params": [],
+              "returnType": "FileChange[]"
+            },
+            {
+              "name": "clearChanges",
+              "params": [],
+              "returnType": "void"
+            },
+            {
+              "name": "updateIgnorePatterns",
+              "params": [
+                {
+                  "name": "patterns",
+                  "type": "string[]",
+                  "isRequired": true
+                }
+              ],
+              "returnType": "void"
+            },
+            {
+              "name": "getTrackedChangesAsString",
+              "params": [],
+              "returnType": "string"
+            },
+            {
+              "name": "dispose",
+              "params": [],
+              "returnType": "void"
+            }
+          ],
+          "properties": [
+            {
+              "name": "instance",
+              "type": "WorkSpaceTracker | null",
+              "isRequired": true
+            },
+            {
+              "name": "watcher",
+              "type": "vscode.FileSystemWatcher | null",
+              "isRequired": true
+            },
+            {
+              "name": "ignorePatterns",
+              "type": "string[]",
+              "isRequired": true
+            },
+            {
+              "name": "workSpaceChanges",
+              "type": "Map<string, FileChange>",
+              "isRequired": true
+            },
+            {
+              "name": "logChannel",
+              "type": "vscode.OutputChannel",
+              "isRequired": true
+            }
+          ],
+          "usedInFiles": []
+        }
+      ],
+      "variables": [
+        {
+          "name": "relativePath",
+          "isExported": false,
+          "type": "string",
+          "usedInFiles": []
+        },
+        {
+          "name": "isIgnored",
+          "isExported": false,
+          "type": "boolean",
+          "usedInFiles": []
+        },
+        {
+          "name": "validExtensions",
+          "isExported": false,
+          "type": "string[]",
+          "usedInFiles": []
+        },
+        {
+          "name": "extension",
+          "isExported": false,
+          "type": "string",
+          "usedInFiles": []
+        },
+        {
+          "name": "change",
+          "isExported": false,
+          "type": "FileChange",
+          "usedInFiles": []
+        },
+        {
+          "name": "changes",
+          "isExported": false,
+          "type": "FileChange[]",
+          "usedInFiles": []
+        }
+      ]
+    },
+    "imports": [
+      {
+        "name": "vscode",
+        "path": "vscode",
+        "namedImports": [
+          "* as vscode"
+        ],
+        "defaultImport": "",
+        "isTypeOnly": false
+      },
+      {
+        "name": "events",
+        "path": "events",
+        "namedImports": [
+          "EventEmitter"
+        ],
+        "defaultImport": "",
+        "isTypeOnly": false
+      },
+      {
+        "name": "path",
+        "path": "path",
+        "namedImports": [
+          "* as path"
+        ],
+        "defaultImport": "",
+        "isTypeOnly": false
+      }
+    ],
+    "incomingDependencies": [
+      "/Users/adityapande/Desktop/Project/CodeTracker/src/services/workSpaceTrackerService.ts",
+      "/Users/adityapande/Desktop/Project/CodeTracker/src/extension.ts"
+    ],
+    "outgoingDependencies": [],
+    "usedByComponents": []
+  },
+  {
+    "fileName": "workSpaceTrackerService.ts",
+    "filePath": "/Users/adityapande/Desktop/Project/CodeTracker/src/services/workSpaceTrackerService.ts",
+    "exports": {
+      "components": [],
+      "functions": [
+        {
+          "name": "initializeWorkSpaceTracking",
+          "isExported": true,
+          "params": [
+            {
+              "name": "outputChannel",
+              "type": "vscode.OutputChannel",
+              "isRequired": true
+            }
+          ],
+          "returnType": "void",
+          "usedInFiles": [
+            "/Users/adityapande/Desktop/Project/CodeTracker/src/extension.ts"
+          ]
+        }
+      ],
+      "interfaces": [],
+      "types": [],
+      "classes": [],
+      "variables": [
+        {
+          "name": "workspaceFolders",
+          "isExported": false,
+          "type": "readonly WorkspaceFolder[]",
+          "usedInFiles": []
+        },
+        {
+          "name": "workspaceTracker",
+          "isExported": false,
+          "type": "WorkSpaceTracker",
+          "usedInFiles": []
+        }
+      ]
+    },
+    "imports": [
+      {
+        "name": "vscode",
+        "path": "vscode",
+        "namedImports": [
+          "* as vscode"
+        ],
+        "defaultImport": "",
+        "isTypeOnly": false
+      },
+      {
+        "name": "workSpaceTracker",
+        "path": "./workSpaceTracker",
+        "namedImports": [
+          "WorkSpaceTracker"
+        ],
+        "defaultImport": "",
+        "isTypeOnly": false,
+        "resolvedFilePath": "/Users/adityapande/Desktop/Project/CodeTracker/src/services/workSpaceTracker.ts"
+      }
+    ],
+    "incomingDependencies": [
+      "/Users/adityapande/Desktop/Project/CodeTracker/src/commands/githubAuthCommand.ts",
+      "/Users/adityapande/Desktop/Project/CodeTracker/src/views/sideBar.ts",
+      "/Users/adityapande/Desktop/Project/CodeTracker/src/extension.ts"
+    ],
+    "outgoingDependencies": [
+      "/Users/adityapande/Desktop/Project/CodeTracker/src/services/workSpaceTracker.ts"
+    ],
+    "usedByComponents": []
+  },
+  {
+    "fileName": "githubAuthCommand.ts",
+    "filePath": "/Users/adityapande/Desktop/Project/CodeTracker/src/commands/githubAuthCommand.ts",
+    "exports": {
+      "components": [],
+      "functions": [
+        {
+          "name": "registerGitHubAuthCommand",
+          "isExported": true,
+          "params": [
+            {
+              "name": "context",
+              "type": "vscode.ExtensionContext",
+              "isRequired": true
+            },
+            {
+              "name": "outputChannel",
+              "type": "vscode.OutputChannel",
+              "isRequired": true
+            }
+          ],
+          "returnType": "void",
+          "usedInFiles": []
+        }
+      ],
+      "interfaces": [],
+      "types": [],
+      "classes": [],
+      "variables": [
+        {
+          "name": "disposable",
+          "isExported": false,
+          "type": "Disposable",
+          "usedInFiles": []
+        },
+        {
+          "name": "userResponse",
+          "isExported": false,
+          "type": "\"Yes\" | \"No\"",
+          "usedInFiles": []
+        },
+        {
+          "name": "session",
+          "isExported": false,
+          "type": "AuthenticationSession | { accessToken: string; }",
+          "usedInFiles": []
+        }
+      ]
+    },
+    "imports": [
+      {
+        "name": "vscode",
+        "path": "vscode",
+        "namedImports": [
+          "* as vscode"
+        ],
+        "defaultImport": "",
+        "isTypeOnly": false
+      },
+      {
+        "name": "githubAuth",
+        "path": "../services/githubAuth",
+        "namedImports": [
+          "githubAuthenticate"
+        ],
+        "defaultImport": "",
+        "isTypeOnly": false,
+        "resolvedFilePath": "/Users/adityapande/Desktop/Project/CodeTracker/src/services/githubAuth.ts"
+      },
+      {
+        "name": "workSpaceTrackerService",
+        "path": "../services/workSpaceTrackerService",
+        "namedImports": [
+          "initializeWorkSpaceTracking"
+        ],
+        "defaultImport": "",
+        "isTypeOnly": false,
+        "resolvedFilePath": "/Users/adityapande/Desktop/Project/CodeTracker/src/services/workSpaceTrackerService.ts"
+      }
+    ],
+    "incomingDependencies": [
+      "/Users/adityapande/Desktop/Project/CodeTracker/src/extension.ts"
+    ],
+    "outgoingDependencies": [
+      "/Users/adityapande/Desktop/Project/CodeTracker/src/services/githubAuth.ts",
+      "/Users/adityapande/Desktop/Project/CodeTracker/src/services/workSpaceTrackerService.ts"
+    ],
+    "usedByComponents": []
+  },
+  {
+    "fileName": "pushLog.ts",
+    "filePath": "/Users/adityapande/Desktop/Project/CodeTracker/src/services/pushLog.ts",
+    "exports": {
+      "components": [],
+      "functions": [
+        {
+          "name": "pushLogToGitHub",
+          "isExported": true,
+          "params": [
+            {
+              "name": "logContent",
+              "type": "string",
+              "isRequired": true
+            },
+            {
+              "name": "accessToken",
+              "type": "string",
+              "isRequired": true
+            },
+            {
+              "name": "session",
+              "type": "vscode.AuthenticationSession",
+              "isRequired": true
+            }
+          ],
+          "returnType": "(logContent: string, accessToken: string, session: AuthenticationSession) => Promise<void>",
+          "usedInFiles": [
+            "/Users/adityapande/Desktop/Project/CodeTracker/src/extension.ts"
+          ]
+        }
+      ],
+      "interfaces": [],
+      "types": [],
+      "classes": [],
+      "variables": [
+        {
+          "name": "date",
+          "isExported": false,
+          "type": "Date",
+          "usedInFiles": []
+        },
+        {
+          "name": "workspaceName",
+          "isExported": false,
+          "type": "string",
+          "usedInFiles": []
+        },
+        {
+          "name": "sanitizedWorkspaceName",
+          "isExported": false,
+          "type": "string",
+          "usedInFiles": []
+        },
+        {
+          "name": "folderPath",
+          "isExported": false,
+          "type": "string",
+          "usedInFiles": []
+        },
+        {
+          "name": "fileName",
+          "isExported": false,
+          "type": "string",
+          "usedInFiles": []
+        },
+        {
+          "name": "filePath",
+          "isExported": false,
+          "type": "string",
+          "usedInFiles": []
+        },
+        {
+          "name": "repoOwner",
+          "isExported": false,
+          "type": "string",
+          "usedInFiles": []
+        },
+        {
+          "name": "repoName",
+          "isExported": false,
+          "type": "\"code-tracker\"",
+          "usedInFiles": []
+        },
+        {
+          "name": "branch",
+          "isExported": false,
+          "type": "\"main\"",
+          "usedInFiles": []
+        },
+        {
+          "name": "octokit",
+          "isExported": false,
+          "type": "Octokit & RestEndpointMethods & Api & { paginate: PaginateInterface; }",
+          "usedInFiles": []
+        },
+        {
+          "name": "existingContent",
+          "isExported": false,
+          "type": "\"\"",
+          "usedInFiles": []
+        },
+        {
+          "name": "fileSha",
+          "isExported": false,
+          "type": "string | undefined",
+          "usedInFiles": []
+        },
+        {
+          "name": "updatedContent",
+          "isExported": false,
+          "type": "string",
+          "usedInFiles": []
+        },
+        {
+          "name": "encodedContent",
+          "isExported": false,
+          "type": "string",
+          "usedInFiles": []
+        }
+      ]
+    },
+    "imports": [
+      {
+        "name": "rest",
+        "path": "@octokit/rest",
+        "namedImports": [
+          "Octokit"
+        ],
+        "defaultImport": "",
+        "isTypeOnly": false
+      },
+      {
+        "name": "vscode",
+        "path": "vscode",
+        "namedImports": [
+          "* as vscode"
+        ],
+        "defaultImport": "",
+        "isTypeOnly": false
+      }
+    ],
+    "incomingDependencies": [
+      "/Users/adityapande/Desktop/Project/CodeTracker/src/extension.ts"
+    ],
+    "outgoingDependencies": [],
+    "usedByComponents": []
+  },
+  {
+    "fileName": "sideBar.ts",
+    "filePath": "/Users/adityapande/Desktop/Project/CodeTracker/src/views/sideBar.ts",
+    "exports": {
+      "components": [],
+      "functions": [
+        {
+          "name": "registerCodeTrackerWebViewProvider",
+          "isExported": true,
+          "params": [
+            {
+              "name": "context",
+              "type": "ExtensionContext",
+              "isRequired": true
+            },
+            {
+              "name": "outputChannel",
+              "type": "OutputChannel",
+              "isRequired": true
+            }
+          ],
+          "returnType": "CodeTrackerWebViewProvider",
+          "usedInFiles": [
+            "/Users/adityapande/Desktop/Project/CodeTracker/src/extension.ts"
+          ]
+        }
+      ],
+      "interfaces": [],
+      "types": [],
+      "classes": [
+        {
+          "name": "CodeTrackerWebViewProvider",
+          "isExported": true,
+          "methods": [
+            {
+              "name": "resolveWebviewView",
+              "params": [
+                {
+                  "name": "webviewView",
+                  "type": "WebviewView",
+                  "isRequired": true
+                },
+                {
+                  "name": "_context",
+                  "type": "WebviewViewResolveContext",
+                  "isRequired": true
+                },
+                {
+                  "name": "_token",
+                  "type": "CancellationToken",
+                  "isRequired": true
+                }
+              ],
+              "returnType": "(webviewView: WebviewView, _context: WebviewViewResolveContext<unknown>, _token: CancellationToken) => void"
+            },
+            {
+              "name": "_getHtmlForWebview",
+              "params": [
+                {
+                  "name": "webview",
+                  "type": "Webview",
+                  "isRequired": true
+                }
+              ],
+              "returnType": "string"
+            }
+          ],
+          "properties": [
+            {
+              "name": "_view",
+              "type": "WebviewView",
+              "isRequired": false
+            }
+          ],
+          "usedInFiles": []
+        }
+      ],
+      "variables": [
+        {
+          "name": "provider",
+          "isExported": false,
+          "type": "CodeTrackerWebViewProvider",
+          "usedInFiles": []
+        },
+        {
+          "name": "session",
+          "isExported": false,
+          "type": "AuthenticationSession | { accessToken: string; }",
+          "usedInFiles": []
+        },
+        {
+          "name": "styleResetUri",
+          "isExported": false,
+          "type": "Uri",
+          "usedInFiles": []
+        },
+        {
+          "name": "styleVSCodeUri",
+          "isExported": false,
+          "type": "Uri",
+          "usedInFiles": []
+        },
+        {
+          "name": "scriptUri",
+          "isExported": false,
+          "type": "Uri",
+          "usedInFiles": []
+        }
+      ]
+    },
+    "imports": [
+      {
+        "name": "vscode",
+        "path": "vscode",
+        "namedImports": [
+          "CancellationToken",
+          "commands",
+          "ExtensionContext",
+          "Uri",
+          "Webview",
+          "WebviewView",
+          "OutputChannel",
+          "WebviewViewProvider",
+          "WebviewViewResolveContext",
+          "window",
+          "AuthenticationSession",
+          "authentication"
+        ],
+        "defaultImport": "",
+        "isTypeOnly": false
+      },
+      {
+        "name": "githubAuth",
+        "path": "../services/githubAuth",
+        "namedImports": [
+          "githubAuthenticate"
+        ],
+        "defaultImport": "",
+        "isTypeOnly": false,
+        "resolvedFilePath": "/Users/adityapande/Desktop/Project/CodeTracker/src/services/githubAuth.ts"
+      },
+      {
+        "name": "workSpaceTrackerService",
+        "path": "../services/workSpaceTrackerService",
+        "namedImports": [
+          "initializeWorkSpaceTracking"
+        ],
+        "defaultImport": "",
+        "isTypeOnly": false,
+        "resolvedFilePath": "/Users/adityapande/Desktop/Project/CodeTracker/src/services/workSpaceTrackerService.ts"
+      }
+    ],
+    "incomingDependencies": [
+      "/Users/adityapande/Desktop/Project/CodeTracker/src/extension.ts"
+    ],
+    "outgoingDependencies": [
+      "/Users/adityapande/Desktop/Project/CodeTracker/src/services/githubAuth.ts",
+      "/Users/adityapande/Desktop/Project/CodeTracker/src/services/workSpaceTrackerService.ts"
+    ],
+    "usedByComponents": []
+  },
+  {
+    "fileName": "extension.ts",
+    "filePath": "/Users/adityapande/Desktop/Project/CodeTracker/src/extension.ts",
+    "exports": {
+      "components": [],
+      "functions": [
+        {
+          "name": "activate",
+          "isExported": true,
+          "params": [
+            {
+              "name": "context",
+              "type": "vscode.ExtensionContext",
+              "isRequired": true
+            }
+          ],
+          "returnType": "(context: ExtensionContext) => void",
+          "usedInFiles": []
+        },
+        {
+          "name": "deactivate",
+          "isExported": true,
+          "params": [],
+          "returnType": "void",
+          "usedInFiles": []
+        }
+      ],
+      "interfaces": [],
+      "types": [],
+      "classes": [],
+      "variables": [
+        {
+          "name": "outputChannel",
+          "isExported": false,
+          "type": "OutputChannel",
+          "usedInFiles": []
+        },
+        {
+          "name": "webViewProvider",
+          "isExported": false,
+          "type": "CodeTrackerWebViewProvider",
+          "usedInFiles": []
+        },
+        {
+          "name": "storageKey",
+          "isExported": false,
+          "type": "\"githubAuthenticated\"",
+          "usedInFiles": []
+        },
+        {
+          "name": "isAuthenticated",
+          "isExported": false,
+          "type": "boolean",
+          "usedInFiles": []
+        },
+        {
+          "name": "disposable1",
+          "isExported": false,
+          "type": "Disposable",
+          "usedInFiles": []
+        },
+        {
+          "name": "userResponse",
+          "isExported": false,
+          "type": "\"Yes\" | \"No\"",
+          "usedInFiles": []
+        },
+        {
+          "name": "session",
+          "isExported": false,
+          "type": "AuthenticationSession | { accessToken: string; }",
+          "usedInFiles": []
+        },
+        {
+          "name": "disposable",
+          "isExported": false,
+          "type": "Disposable",
+          "usedInFiles": []
+        },
+        {
+          "name": "session",
+          "isExported": false,
+          "type": "AuthenticationSession | undefined",
+          "usedInFiles": []
+        },
+        {
+          "name": "logContent",
+          "isExported": false,
+          "type": "string",
+          "usedInFiles": []
+        },
+        {
+          "name": "accessToken",
+          "isExported": false,
+          "type": "string",
+          "usedInFiles": []
+        }
+      ]
+    },
+    "imports": [
+      {
+        "name": "vscode",
+        "path": "vscode",
+        "namedImports": [
+          "* as vscode"
+        ],
+        "defaultImport": "",
+        "isTypeOnly": false
+      },
+      {
+        "name": "githubAuthCommand",
+        "path": "./commands/githubAuthCommand",
+        "namedImports": [
+          "registerGitHubAuthCommand"
+        ],
+        "defaultImport": "",
+        "isTypeOnly": false,
+        "resolvedFilePath": "/Users/adityapande/Desktop/Project/CodeTracker/src/commands/githubAuthCommand.ts"
+      },
+      {
+        "name": "workSpaceTrackerService",
+        "path": "./services/workSpaceTrackerService",
+        "namedImports": [
+          "initializeWorkSpaceTracking"
+        ],
+        "defaultImport": "",
+        "isTypeOnly": false,
+        "resolvedFilePath": "/Users/adityapande/Desktop/Project/CodeTracker/src/services/workSpaceTrackerService.ts"
+      },
+      {
+        "name": "pushLog",
+        "path": "./services/pushLog",
+        "namedImports": [
+          "pushLogToGitHub"
+        ],
+        "defaultImport": "",
+        "isTypeOnly": false,
+        "resolvedFilePath": "/Users/adityapande/Desktop/Project/CodeTracker/src/services/pushLog.ts"
+      },
+      {
+        "name": "workSpaceTracker",
+        "path": "./services/workSpaceTracker",
+        "namedImports": [
+          "WorkSpaceTracker"
+        ],
+        "defaultImport": "",
+        "isTypeOnly": false,
+        "resolvedFilePath": "/Users/adityapande/Desktop/Project/CodeTracker/src/services/workSpaceTracker.ts"
+      },
+      {
+        "name": "vscode",
+        "path": "vscode",
+        "namedImports": [
+          "authentication",
+          "AuthenticationSession"
+        ],
+        "defaultImport": "",
+        "isTypeOnly": false
+      },
+      {
+        "name": "sideBar",
+        "path": "./views/sideBar",
+        "namedImports": [
+          "registerCodeTrackerWebViewProvider"
+        ],
+        "defaultImport": "",
+        "isTypeOnly": false,
+        "resolvedFilePath": "/Users/adityapande/Desktop/Project/CodeTracker/src/views/sideBar.ts"
+      },
+      {
+        "name": "githubAuth",
+        "path": "./services/githubAuth",
+        "namedImports": [
+          "githubAuthenticate"
+        ],
+        "defaultImport": "",
+        "isTypeOnly": false,
+        "resolvedFilePath": "/Users/adityapande/Desktop/Project/CodeTracker/src/services/githubAuth.ts"
+      }
+    ],
+    "incomingDependencies": [],
+    "outgoingDependencies": [
+      "/Users/adityapande/Desktop/Project/CodeTracker/src/commands/githubAuthCommand.ts",
+      "/Users/adityapande/Desktop/Project/CodeTracker/src/services/workSpaceTrackerService.ts",
+      "/Users/adityapande/Desktop/Project/CodeTracker/src/services/pushLog.ts",
+      "/Users/adityapande/Desktop/Project/CodeTracker/src/services/workSpaceTracker.ts",
+      "/Users/adityapande/Desktop/Project/CodeTracker/src/views/sideBar.ts",
+      "/Users/adityapande/Desktop/Project/CodeTracker/src/services/githubAuth.ts"
+    ],
+    "usedByComponents": []
+  },
+  {
+    "fileName": "extension.test.ts",
+    "filePath": "/Users/adityapande/Desktop/Project/CodeTracker/src/test/extension.test.ts",
+    "exports": {
+      "components": [],
+      "functions": [],
+      "interfaces": [],
+      "types": [],
+      "classes": [],
+      "variables": []
+    },
+    "imports": [
+      {
+        "name": "assert",
+        "path": "assert",
+        "namedImports": [
+          "* as assert"
+        ],
+        "defaultImport": "",
+        "isTypeOnly": false
+      },
+      {
+        "name": "vscode",
+        "path": "vscode",
+        "namedImports": [
+          "* as vscode"
+        ],
+        "defaultImport": "",
+        "isTypeOnly": false
+      }
+    ],
+    "incomingDependencies": [],
+    "outgoingDependencies": [],
+    "usedByComponents": []
+  }
+]

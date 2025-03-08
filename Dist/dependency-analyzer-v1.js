@@ -736,7 +736,9 @@ function analyzeProject(projectPath) {
         files.forEach(file => {
             const filePath = path.join(dir, file);
             if (fs.statSync(filePath).isDirectory()) {
-                getAllFiles(filePath, fileList);
+                if (file !== 'node_modules') {
+                    getAllFiles(filePath, fileList);
+                }
             }
             else if (filePath.endsWith('.ts') || filePath.endsWith('.tsx')) {
                 fileList.push(filePath);
@@ -765,8 +767,11 @@ function analyzeProject(projectPath) {
     findDependencies(filesAnalysis, sourceFiles);
     // Output the analysis results in JSON format
     console.log('\n=== Analysis Results (JSON) ===');
-    console.log(JSON.stringify(filesAnalysis, null, 2));
+    fs.writeFileSync('analysis-results-codeTracker.json', JSON.stringify(filesAnalysis, null, 2));
+    console.log('Analysis results written to analysis-results.json');
     console.log('\nAnalysis complete.');
 }
 let projectPath = '/Users/adityapande/Desktop/trial-project/src';
-analyzeProject(projectPath);
+let codeTracker = '/Users/adityapande/Desktop/Project/CodeTracker';
+// analyzeProject(projectPath);
+analyzeProject(codeTracker);
